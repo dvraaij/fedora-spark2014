@@ -1,0 +1,100 @@
+--- a/include/sparklib.gpr
++++ b/include/sparklib.gpr
+@@ -2,17 +2,8 @@
+ 
+ project SPARKlib is
+ 
+-   --  Environment variable SPARKLIB_OBJECT_DIR controls the object
+-   --  directory used in compilation and/or verification.
+-
+-   for Object_Dir use External("SPARKLIB_OBJECT_DIR");
+-
+-   case SPARKlib_common.SPARKlib_Installed is
+-      when "True" =>
+-         for Source_Dirs use ("../../include/spark");
+-      when others =>
+-         for Source_Dirs use (".");
+-   end case;
++   for Object_Dir use "@VARDIR@/@NAME@";
++   for Source_Dirs use ("@INCLUDEDIR@/@NAME@");
+ 
+    SPARK_Body_Mode := SPARKlib_common.SPARK_Body_Mode;
+ 
+--- a/include/sparklib_common.gpr
++++ b/include/sparklib_common.gpr
+@@ -2,21 +2,19 @@
+ 
+    for Source_Files use ();
+ 
+-   --  Environment variable SPARKLIB_INSTALLED controls whether the
+-   --  project and its sources are being installed as part of SPARK install
+-   --  (value "True") or whether they are in source repository configuration
+-   --  (value "False"). Inside SPARK install, this project file is installed
+-   --  in <install>/lib/gnat and the sources in <install>/include/spark
++   --  Controls whether the project and its sources are being installed
++   --  as part of SPARK install (value "True") or whether they are in
++   --  source repository configuration (value "False").
+ 
+    type SPARKlib_Installed_T is ("True", "False");
+-   SPARKlib_Installed := External("SPARKLIB_INSTALLED", "True");
++   SPARKlib_Installed := "True";
+ 
+-   --  Environment variable SPARKLIB_BODY_MODE controls whether the
+-   --  project is with'ed in client projects to use lemmas (value "Off"),
+-   --  or whether it is being itself formally verified (value "On").
++   --  Controls whether the project is with'ed in client projects to use
++   --  lemmas (value "Off"), or whether it is being itself formally
++   --  verified (value "On").
+ 
+    type SPARK_Body_Mode_T is ("Off", "On");
+-   SPARK_Body_Mode := External ("SPARKLIB_BODY_MODE", "Off");
++   SPARK_Body_Mode := "Off";
+ 
+    package Compiler is
+       --  Enforce GNAT style checks, except for multiple blank lines which does
+--- a/include/sparklib_internal.gpr
++++ b/include/sparklib_internal.gpr
+@@ -5,17 +5,8 @@
+ 
+ project SPARKlib_Internal is
+ 
+-   --  Environment variable SPARKLIB_OBJECT_DIR controls the object
+-   --  directory used in compilation and/or verification.
+-
+-   for Object_Dir use External("SPARKLIB_OBJECT_DIR");
+-
+-   case SPARKlib_common.SPARKlib_Installed is
+-      when "True" =>
+-         for Source_Dirs use ("../../include/spark");
+-      when others =>
+-         for Source_Dirs use (".");
+-   end case;
++   for Object_Dir use "@VARDIR@/@NAME@";
++   for Source_Dirs use ("@INCLUDEDIR@/@NAME@");
+ 
+    SPARK_Body_Mode := SPARKlib_common.SPARK_Body_Mode;
+ 
+--- a/include/sparklib_light.gpr
++++ b/include/sparklib_light.gpr
+@@ -4,18 +4,9 @@
+ --  Ada.Numerics.Big_Numbers or Ada.Finalization units.
+ 
+ project SPARKlib_Light is
+-
+-   --  Environment variable SPARKLIB_OBJECT_DIR controls the object
+-   --  directory used in compilation and/or verification.
+-
+-   for Object_Dir use External("SPARKLIB_OBJECT_DIR");
+-
+-   case SPARKlib_common.SPARKlib_Installed is
+-      when "True" =>
+-         for Source_Dirs use ("../../include/spark");
+-      when others =>
+-         for Source_Dirs use (".");
+-   end case;
++   
++   for Object_Dir use "@VARDIR@/@NAME@";
++   for Source_Dirs use ("@INCLUDEDIR@/@NAME@");
+ 
+    SPARK_Body_Mode := SPARKlib_common.SPARK_Body_Mode;
+ 

@@ -1,0 +1,51 @@
+--- a/why3/src/gnat/gnat_util.ml
++++ b/why3/src/gnat/gnat_util.ml
+@@ -38,11 +38,6 @@
+    with Invalid_argument _ | Not_found ->
+       String.sub s 0 (!last_index) :: !acc
+
+-let why3_prefix =
+-  Filename.dirname (Filename.dirname Sys.executable_name)
+-let spark_prefix =
+-  Filename.dirname (Filename.dirname why3_prefix)
+-
+ let gnatprove_why3conf_file = "why3.conf"
+
+ let rec file_concat l =
+@@ -53,9 +48,9 @@
+   | x :: xs -> Filename.concat x (file_concat xs)
+
+ let spark_loadpath =
+-  [ file_concat [why3_prefix; "share"; "why3"; "theories"];
+-    file_concat [why3_prefix; "share"; "why3"; "modules"];
+-    file_concat [spark_prefix; "share"; "spark"; "theories"]
++  [ file_concat ["@LIBEXECDIR@"; "@NAME@"; "share"; "why3"; "theories"];
++    file_concat ["@LIBEXECDIR@"; "@NAME@"; "share"; "why3"; "modules"];
++    file_concat ["@DATADIR@"; "@NAME@"; "theories"]
+   ]
+
+ let find_driver_file ~conf_file ?extra_conf_file fn =
+@@ -81,7 +76,7 @@
+   with Exit ->
+       let driver_file = Filename.basename fn in
+       let full_path =
+-        file_concat [why3_prefix;"share";"why3";"drivers";driver_file] in
++        file_concat ["@LIBEXECDIR@"; "@NAME@"; "share"; "why3"; "drivers"; driver_file] in
+       if Sys.file_exists full_path then full_path
+       else
+         abort_with_message ~internal:false
+--- a/why3/src/gnat/gnat_util.mli
++++ b/why3/src/gnat/gnat_util.mli
+@@ -14,12 +14,6 @@
+    gnatprove. The location of an additional config file may be used for
+    this.  *)
+
+-val why3_prefix : string
+-val spark_prefix : string
+-(* executable is in <prefix>/libexec/spark/bin
+-   why3-prefix is <prefix>/libexec/spark
+-   spark-prefix is <prefix> *)
+-
+ val gnatprove_why3conf_file : string
+
+ val file_concat : string list -> string
