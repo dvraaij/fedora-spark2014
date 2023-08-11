@@ -103,7 +103,7 @@ Provides:       gnatprove = %{version}
 
 # Recommend supported solvers available in Fedora and SPARKlib.
 # -- Note: CVC4 is no longer supported.
-Recommends:     z3, alt-ergo
+Recommends:     cvc5, z3, alt-ergo
 Recommends:     sparklib
 
 # Build only on architectures where GPRbuild and the OCaml compiler is

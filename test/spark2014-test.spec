@@ -18,7 +18,7 @@ Patch:          spark2014-colibri-not-available-for-testing.patch
 
 BuildRequires:  spark2014
 BuildRequires:  sparklib
-BuildRequires:  z3, alt-ergo
+BuildRequires:  cvc5, z3, alt-ergo
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
