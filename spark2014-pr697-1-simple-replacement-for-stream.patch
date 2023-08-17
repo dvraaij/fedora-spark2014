@@ -1,0 +1,45 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : 0448682a8a9f2688039b62690a3c78640630b054
+
+--- a/why3/src/ide/wserver.ml
++++ b/why3/src/ide/wserver.ml
+@@ -193,6 +193,25 @@ let rec extract_param name stop_char =
+       else extract_param name stop_char l
+   | [] -> ""
+
++module Stream = struct
++
++type 'a t = { mutable current : 'a option option; next : unit -> 'a option }
++
++let peek t =
++  match t.current with
++  | None ->
++      let v = t.next () in
++      t.current <- Some v;
++      v
++  | Some v -> v
++
++let junk t =
++  t.current <- None
++
++let from f = { current = None; next = f }
++
++end
++
+ let get_request strm =
+   let buff = Buffer.create 80 in
+   let rec loop (strm__ : _ Stream.t) =
+diff --git a/why3/src/ide/wserver.mli b/why3/src/ide/wserver.mli
+index 52aabd382c..31824302f7 100644
+--- a/why3/src/ide/wserver.mli
++++ b/why3/src/ide/wserver.mli
+@@ -68,7 +68,5 @@ val extract_param : string -> char -> string list -> string
+     request has been obtained by: [extract_param "GET /" ' '].
+     Answers the empty string if the parameter is not found. *)
+
+-val get_request_and_content : char Stream.t -> string list * string
+-
+ val string_of_sockaddr : Unix.sockaddr -> string
+ val sockaddr_of_string : string -> Unix.sockaddr

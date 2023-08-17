@@ -1,0 +1,118 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : b454729a68bffa451061fa008017712d580a1895
+
+--- a/why3/Makefile.in
++++ b/why3/Makefile.in
+@@ -228,7 +228,6 @@
+ 	src/util/rc.ml src/util/lexlib.ml src/util/mysexplib.ml \
+ 	src/util/json_parser.mli src/util/json_parser.ml \
+ 	src/util/json_lexer.ml src/util/mlmpfr_wrapper.ml \
+-	src/util/dynlink_wrapper.ml \
+ 	src/parser/lexer.ml \
+ 	src/core/parser_tokens.mli src/core/parser_tokens.ml \
+ 	src/parser/parser.mli src/parser/parser.ml \
+@@ -243,7 +242,7 @@
+ 	   pp extmap extset exthtbl weakhtbl diffmap \
+ 	   hashcons wstdlib exn_printer getopt \
+ 	   json_base json_parser json_lexer \
+-	   debug loc lexlib print_tree dynlink_wrapper \
++	   debug loc lexlib print_tree \
+ 	   cmdline warning sysutil rc plugin bigInt number constant vector pqueue
+
+ ifeq (@enable_re@,no)
+@@ -336,14 +335,6 @@
+
+ $(LIBDEP): $(LIBGENERATED)
+
+-ifeq (@new_dynlink@,yes)
+-src/util/dynlink_wrapper.ml: src/util/dynlink_new.ml Makefile
+-	$(CMP_CP)
+-else
+-src/util/dynlink_wrapper.ml: src/util/dynlink_old.ml Makefile
+-	$(CMP_CP)
+-endif
+-
+ # Mlmpfr
+
+ ifeq (@enable_mpfr@,yes)
+--- a/why3/configure.in
++++ b/why3/configure.in
+@@ -215,9 +215,6 @@
+ AX_VERSION_GE([$OCAMLVERSION], 4.05.0, [],
+   [AC_MSG_ERROR(You need Objective Caml 4.05.0 or higher.)])
+
+-AX_VERSION_GE([$OCAMLVERSION], 4.08.0, [new_dynlink=yes], [new_dynlink=no])
+-AC_SUBST(new_dynlink)
+-
+ # Ocaml library path
+ # old way: OCAMLLIB=`$OCAMLC -v | tail -1 | cut -f 4 -d ' ' | tr -d '\\r'`
+ OCAMLLIB=`$OCAMLC -where | tr -d '\\r'`
+--- a/why3/src/tools/main.ml
++++ b/why3/src/tools/main.ml
+@@ -97,9 +97,12 @@
+   Whyconf.Args.add_command sscmd;
+   try
+     Dynlink.allow_unsafe_modules true;
+-    Dynlink_wrapper.loadfile cmd;
++    Dynlink.loadfile cmd;
+     exit 0
+-  with Dynlink.Error e ->
++  with
++  | Dynlink.Error (Dynlink.Library's_module_initializers_failed e) ->
++      Printexc.raise_with_backtrace e (Printexc.get_raw_backtrace ())
++  | Dynlink.Error e ->
+     Printf.eprintf "Failed to load %s: %s\n%!" cmd (Dynlink.error_message e);
+     exit 1
+
+--- a/why3/src/util/dynlink_new.ml
++++ /dev/null
+@@ -1,17 +0,0 @@
+-(********************************************************************)
+-(*                                                                  *)
+-(*  The Why3 Verification Platform   /   The Why3 Development Team  *)
+-(*  Copyright 2010-2022 --  Inria - CNRS - Paris-Saclay University  *)
+-(*                                                                  *)
+-(*  This software is distributed under the terms of the GNU Lesser  *)
+-(*  General Public License version 2.1, with the special exception  *)
+-(*  on linking described in file LICENSE.                           *)
+-(*                                                                  *)
+-(********************************************************************)
+-
+-let loadfile name =
+-  try
+-    Dynlink.loadfile name
+-  with
+-  | Dynlink.Error (Dynlink.Library's_module_initializers_failed e) ->
+-      Printexc.raise_with_backtrace e (Printexc.get_raw_backtrace ())
+--- a/why3/src/util/dynlink_old.ml
++++ /dev/null
+@@ -1,12 +0,0 @@
+-(********************************************************************)
+-(*                                                                  *)
+-(*  The Why3 Verification Platform   /   The Why3 Development Team  *)
+-(*  Copyright 2010-2022 --  Inria - CNRS - Paris-Saclay University  *)
+-(*                                                                  *)
+-(*  This software is distributed under the terms of the GNU Lesser  *)
+-(*  General Public License version 2.1, with the special exception  *)
+-(*  on linking described in file LICENSE.                           *)
+-(*                                                                  *)
+-(********************************************************************)
+-
+-let loadfile = Dynlink.loadfile
+--- a/why3/src/util/dynlink_wrapper.mli
++++ /dev/null
+@@ -1,12 +0,0 @@
+-(********************************************************************)
+-(*                                                                  *)
+-(*  The Why3 Verification Platform   /   The Why3 Development Team  *)
+-(*  Copyright 2010-2022 --  Inria - CNRS - Paris-Saclay University  *)
+-(*                                                                  *)
+-(*  This software is distributed under the terms of the GNU Lesser  *)
+-(*  General Public License version 2.1, with the special exception  *)
+-(*  on linking described in file LICENSE.                           *)
+-(*                                                                  *)
+-(********************************************************************)
+-
+-val loadfile : string -> unit

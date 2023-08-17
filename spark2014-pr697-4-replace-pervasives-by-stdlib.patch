@@ -1,0 +1,147 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : 17c155c55a97558f257fbfda29dfaca4eda00688
+
+--- a/why3/plugins/transform/hypothesis_selection.ml
++++ b/why3/plugins/transform/hypothesis_selection.ml
+@@ -22,7 +22,7 @@
+
+ module Int_Dft = struct
+   type t = int
+-  let compare = Pervasives.compare
++  let compare = Stdlib.compare
+   let default = max_int
+ end
+
+--- a/why3/src/core/term.ml
++++ b/why3/src/core/term.ml
+@@ -278,7 +278,7 @@
+ let t_compare ~trigger ~attr ~loc ~const t1 t2 =
+   let comp_raise c =
+     if c < 0 then raise CompLT else if c > 0 then raise CompGT in
+-  let perv_compare h1 h2 = comp_raise (Pervasives.compare h1 h2) in
++  let perv_compare h1 h2 = comp_raise (Stdlib.compare h1 h2) in
+   let rec pat_compare (bnd,bv1,bv2 as state) p1 p2 =
+     match p1.pat_node, p2.pat_node with
+     | Pwild, Pwild ->
+--- a/why3/src/printer/coq.mli
++++ b/why3/src/printer/coq.mli
+@@ -11,5 +11,5 @@
+
+ (* OBSOLETE
+ val print_theory : Env.env -> Printer.prelude -> Printer.prelude_map ->
+-  ?old:Pervasives.in_channel -> Format.formatter -> Theory.theory -> unit
++  ?old:Stdlib.in_channel -> Format.formatter -> Theory.theory -> unit
+ *)
+--- a/why3/src/session/compress_none.ml
++++ b/why3/src/session/compress_none.ml
+@@ -40,6 +40,6 @@
+
+ end
+
+-module Compress_none = Pervasives
++module Compress_none = Stdlib
+
+-module Compress_z = Pervasives
++module Compress_z = Stdlib
+--- a/why3/src/session/compress_z.ml
++++ b/why3/src/session/compress_z.ml
+@@ -41,7 +41,7 @@
+ end
+
+
+-module Compress_none = Pervasives
++module Compress_none = Stdlib
+
+ module Compress_z = struct
+
+--- a/why3/src/session/termcode.ml
++++ b/why3/src/session/termcode.ml
+@@ -1113,7 +1113,7 @@
+     let allgoals = Hashtbl.fold add old_checksums newgoals in
+     Hashtbl.clear old_checksums;
+     (* phase 2: pair goals according to shapes *)
+-    let compare e1 e2 = Pervasives.compare e1.shape e2.shape in
++    let compare e1 e2 = Stdlib.compare e1.shape e2.shape in
+     let allgoals = List.sort compare allgoals in
+     build_list allgoals;
+     if allgoals <> [] then begin
+--- a/why3/src/util/constant.ml
++++ b/why3/src/util/constant.ml
+@@ -23,13 +23,13 @@
+ let compare_const ?(structural=true) c1 c2 =
+   match c1, c2 with
+   | ConstInt { il_kind = k1; il_int = i1 }, ConstInt { il_kind = k2; il_int = i2 } ->
+-      let c = if structural then Pervasives.compare k1 k2 else 0 in
++      let c = if structural then Stdlib.compare k1 k2 else 0 in
+       if c <> 0 then c else BigInt.compare i1 i2
+   | ConstReal { rl_kind = k1; rl_real = r1 }, ConstReal { rl_kind = k2; rl_real = r2 } ->
+-      let c = if structural then Pervasives.compare k1 k2 else 0 in
++      let c = if structural then Stdlib.compare k1 k2 else 0 in
+       if c <> 0 then c else compare_real ~structural r1 r2
+   | _, _ ->
+-      Pervasives.compare c1 c2
++      Stdlib.compare c1 c2
+
+ let int_const ?(il_kind=ILitUnk) n =
+   ConstInt { il_kind; il_int = n }
+--- a/why3/src/util/debug.ml
++++ b/why3/src/util/debug.ml
+@@ -118,7 +118,7 @@
+         in
+         Format.printf "@[<v>%a@]@."
+           (Pp.print_list Pp.newline print)
+-          (List.sort Pervasives.compare list);
++          (List.sort Stdlib.compare list);
+       end;
+       !opt_list_flags in
+     desc,list
+--- a/why3/src/util/loc.ml
++++ b/why3/src/util/loc.ml
+@@ -69,8 +69,8 @@
+   let ec = e.pos_cnum - e.pos_bol in
+   user_position f bl bc el ec
+
+-let compare = Pervasives.compare
+-let equal = Pervasives.(=)
++let compare = Stdlib.compare
++let equal = Stdlib.(=)
+ let hash = Hashtbl.hash
+
+ let pp_position_tail fmt bl bc el ec =
+--- a/why3/src/util/pp.mli
++++ b/why3/src/util/pp.mli
+@@ -119,10 +119,10 @@
+ val wnl : formatter -> unit
+
+ val sprintf :
+-  ('b,  formatter, unit, string) Pervasives.format4 -> 'b
++  ('b,  formatter, unit, string) Stdlib.format4 -> 'b
+
+ val sprintf_wnl :
+-  ('b,  formatter, unit, string) Pervasives.format4 -> 'b
++  ('b,  formatter, unit, string) Stdlib.format4 -> 'b
+
+ val html_char : char pp
+ val html_string : string pp
+--- a/why3/src/util/wstdlib.ml
++++ b/why3/src/util/wstdlib.ml
+@@ -13,7 +13,7 @@
+
+ module Int = struct
+   type t = int
+-  let compare (x : int) y = Pervasives.compare x y [@ocaml.warning "-3"]
++  let compare (x : int) y = Stdlib.compare x y
+   let equal (x : int) y = x = y
+   let hash  (x : int) = x
+ end
+@@ -33,7 +33,7 @@
+
+ module Float = struct
+   type t = float
+-  let compare (x : float) y = Pervasives.compare x y [@ocaml.warning "-3"]
++  let compare (x : float) y = Stdlib.compare x y
+   let equal (x : float) y = x = y
+   let hash  (x : float) = Exthtbl.hash x
+ end
