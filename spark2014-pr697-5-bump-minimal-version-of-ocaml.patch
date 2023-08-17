@@ -1,0 +1,85 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : c9703ed57468bc23da60c7284dd1587da1608c3f
+
+--- a/why3/CHANGES.md
++++ b/why3/CHANGES.md
+@@ -28,6 +28,9 @@ MLCFG input language
+ Provers
+   * support for CVC5 1.0.0 (released April 6, 2022)
+
++Miscellaneous
++  * OCaml >= 4.08 is now required
++
+ Version 1.5.1, September 12, 2022
+ ---------------------------------
+
+diff --git a/why3/CONTRIBUTING.md b/why3/CONTRIBUTING.md
+index e2fd0bc43b..468517d618 100644
+--- a/why3/CONTRIBUTING.md
++++ b/why3/CONTRIBUTING.md
+@@ -5,7 +5,7 @@ External users can file bug reports using our [mailing list](mailto:why3-club@li
+
+ # Building
+
+-To build Why3 locally you will need a functional installation of OCaml (at least 4.05), `menhir`, `num` and `autoconf`. You can set up your developer build using the following commands
++To build Why3 locally you will need a functional installation of OCaml (at least 4.08), `menhir`, `num` and `autoconf`. You can set up your developer build using the following commands:
+
+ ```
+ autoconf
+diff --git a/why3/configure.in b/why3/configure.in
+index 6477085c32..7bf41c7346 100644
+--- a/why3/configure.in
++++ b/why3/configure.in
+@@ -219,8 +219,8 @@ fi
+ OCAMLVERSION=`$OCAMLC -v | sed -n -e 's|.*version *\(.*\)$|\1|p'`
+ echo "ocaml version is $OCAMLVERSION"
+
+-AX_VERSION_GE([$OCAMLVERSION], 4.05.0, [],
+-  [AC_MSG_ERROR(You need Objective Caml 4.05.0 or higher.)])
++AX_VERSION_GE([$OCAMLVERSION], 4.08.0, [],
++  [AC_MSG_ERROR(You need Objective Caml 4.08.0 or higher.)])
+
+ AX_VERSION_GE([$OCAMLVERSION], 4.08.0, [new_dynlink=yes], [new_dynlink=no])
+ AC_SUBST(new_dynlink)
+diff --git a/why3/opam/why3-coq.opam b/why3/opam/why3-coq.opam
+index 8eb0850b36..31e05e6b3f 100644
+--- a/why3/opam/why3-coq.opam
++++ b/why3/opam/why3-coq.opam
+@@ -38,7 +38,7 @@ install: [make "install-coq"]
+ depends: [
+   "conf-autoconf" {build & dev}
+   "coq" {>= "8.7" & < "8.17~"}
+-  "ocaml" {>= "4.05.0"}
++  "ocaml" {>= "4.08.0"}
+   "ocamlfind" {build}
+   "why3" {= version}
+ ]
+diff --git a/why3/opam/why3-ide.opam b/why3/opam/why3-ide.opam
+index 2995a0bedd..31613b9602 100644
+--- a/why3/opam/why3-ide.opam
++++ b/why3/opam/why3-ide.opam
+@@ -37,7 +37,7 @@ install: [make "install-ide"]
+
+ depends: [
+   "conf-autoconf" {build & dev}
+-  "ocaml" {>= "4.05.0"}
++  "ocaml" {>= "4.08.0"}
+   "ocamlfind" {build}
+   "why3" {= version}
+   "lablgtk3"
+diff --git a/why3/opam/why3.opam b/why3/opam/why3.opam
+index 8935f8a714..185b4fd7ac 100644
+--- a/why3/opam/why3.opam
++++ b/why3/opam/why3.opam
+@@ -41,7 +41,7 @@ install: [
+
+ depends: [
+   "conf-autoconf" {build & dev}
+-  "ocaml" {>= "4.05.0" & < "5.0~"}
++  "ocaml" {>= "4.08.0"}
+   "ocamlfind" {build}
+   "menhir" {>= "20170418"}
+   "num"
+--

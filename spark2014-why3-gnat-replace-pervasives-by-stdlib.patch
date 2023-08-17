@@ -1,0 +1,40 @@
+--- a/why3/src/gnat/gnat_expl.ml
++++ b/why3/src/gnat/gnat_expl.ml
+@@ -154,12 +154,12 @@
+ 
+ 
+ let check_compare a b =
+-  let c = Pervasives.compare a.id b.id in
++  let c = Stdlib.compare a.id b.id in
+   if c <> 0 then c
+-  else Pervasives.compare a.reason b.reason
++  else Stdlib.compare a.reason b.reason
+ 
+ let check_equal a b =
+-  Pervasives.(=) a.id b.id && Pervasives.(=) a.reason b.reason
++  Stdlib.(=) a.id b.id && Stdlib.(=) a.reason b.reason
+ 
+ let check_hash e = Hashcons.combine (Hashtbl.hash e.id) (Hashtbl.hash e.reason)
+ 
+--- a/why3/src/gnat/gnat_loc.ml
++++ b/why3/src/gnat/gnat_loc.ml
+@@ -42,7 +42,7 @@
+   let l = List.hd l in
+   l.file = r.rfile && r.first_line <= l.line && l.line <= r.last_line
+ 
+-let compare_simple = Pervasives.compare
++let compare_simple = Stdlib.compare
+ 
+ let rec compare_loc a b =
+   match a, b with
+--- a/why3/src/gnat/gnat_objectives.ml
++++ b/why3/src/gnat/gnat_objectives.ml
+@@ -22,7 +22,7 @@
+ module GoalCmp = struct
+    (* module to provide comparison goals *)
+   type t = goal_id
+-  let compare a b = Pervasives.compare a b
++  let compare a b = Stdlib.compare a b
+ end
+ 
+ module GoalMap = Session_itp.Hpn

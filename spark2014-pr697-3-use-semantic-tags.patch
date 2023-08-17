@@ -1,0 +1,51 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : a60f17e65a5fb6a2bc5a1b15569dd813b2d6b51c
+
+--- a/why3/src/tools/why3prove.ml
++++ b/why3/src/tools/why3prove.ml
+@@ -516,7 +516,7 @@
+ let () =
+   try
+     if (Util.terminal_has_color && !opt_color) then (
+-      Format.set_formatter_tag_functions Util.ansi_color_tags;
++      Format.set_formatter_stag_functions Util.ansi_color_tags;
+       set_mark_tags true );
+     let main = Whyconf.get_main config in
+     let load (f,ef) = Driver.load_driver_raw main env f ef in
+--- a/why3/src/util/util.ml
++++ b/why3/src/util/util.ml
+@@ -109,6 +109,7 @@
+   term <> "" && term <> "dumb" && Unix.isatty Unix.stdout
+
+ let esc_seq_of_tag str =
++  let str = match str with Format.String_tag str -> str | _ -> assert false in
+   let tokens = String.split_on_char ' ' (String.lowercase_ascii str) in
+   let bold, tokens = match tokens with
+     | "bold" :: tokens -> true, tokens
+@@ -129,10 +130,10 @@
+   String.concat ";" (aux 30 fg @ aux 40 bg @ bold)
+
+ let ansi_color_tags = Format.{
+-  mark_open_tag= (fun tag -> sprintf "\027[%sm" (esc_seq_of_tag tag));
+-  mark_close_tag= (fun _ -> "\027[0m");
+-  print_open_tag= ignore;
+-  print_close_tag= ignore;
++  mark_open_stag   = (fun tag -> sprintf "\027[%sm" (esc_seq_of_tag tag));
++  mark_close_stag  = (fun _ -> "\027[0m");
++  print_open_stag  = ignore;
++  print_close_stag = ignore;
+ }
+
+ let is_sexp_simple_token s =
+--- a/why3/src/util/util.mli
++++ b/why3/src/util/util.mli
+@@ -123,7 +123,7 @@
+    ["TERM"] environment variables is set, and not to ["dump"], and that standard output is
+    a terminal. *)
+
+-val ansi_color_tags : Format.formatter_tag_functions
++val ansi_color_tags : Format.formatter_stag_functions
+ (** Functions to interpret tags as ANSI terminal color codes. The format of the tag is
+    [[bold] [<color>] [on <bg-color>]].

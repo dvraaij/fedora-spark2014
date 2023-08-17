@@ -1,0 +1,91 @@
+Description : Backport of an upstream commit.
+License     : LGPL-2.1-only
+Upstream    : https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Commit      : 5c58308f51a9e5b544bc5c7abf53f5830c75a72a
+
+--- a/why3/.merlin.in
++++ b/why3/.merlin.in
+@@ -49,4 +49,4 @@
+ B plugins/gnat_json
+ B lib/why3
+
+-PKG @SEQLIB@ @RELIB@ unix num dynlink yojson @ZIPLIB@ @LABLGTKPKG@ @META_OCAMLGRAPH@ @JSOFOCAMLPKG@ @MLMPFR@ @INFERPKG@ @SEXPLIB@
++PKG @RELIB@ unix num dynlink yojson @ZIPLIB@ @LABLGTKPKG@ @META_OCAMLGRAPH@ @JSOFOCAMLPKG@ @MLMPFR@ @INFERPKG@ @SEXPLIB@
+--- a/why3/configure.in
++++ b/why3/configure.in
+@@ -570,35 +570,6 @@
+ fi
+ AC_SUBST(menhirlib_cmo)
+
+-# checking for seq
+-# (ocamlfind cannot be trusted here, since the default installation path is $OCAMLLIB)
+-found_seq=no
+-if test "$enable_ocamlfind" = yes; then
+-   DIR=$($OCAMLFIND query seq)
+-   if test -n "$DIR"; then
+-      echo "ocamlfind found seq in $DIR"
+-      SEQINCLUDE="-I $DIR"
+-      SEQLIB=seq
+-      found_seq=yes
+-      AC_CHECK_FILE($DIR/seq.cma,,found_seq=no)
+-      AC_CHECK_FILE($DIR/seq.cmi,,found_seq=no)
+-   fi
+-fi
+-if test "$found_seq" = no; then
+-   DIR="$OCAMLLIB"
+-   SEQINCLUDE=
+-   SEQLIB=
+-   AC_CHECK_FILE($DIR/stdlib__seq.cmi,found_seq=yes,)
+-   AC_CHECK_FILE($DIR/stdlib__Seq.cmi,found_seq=yes,)
+-fi
+-if test "$found_seq" = no; then
+-   AC_MSG_WARN([Library seq not found.])
+-   if test "$enable_re" = yes; then
+-      enable_re=no
+-      reason_re=" (seq not found)"
+-   fi
+-fi
+-
+ # checking for re
+ if test "$enable_re" = yes; then
+    found_re=yes
+@@ -1177,9 +1148,6 @@
+
+ AC_SUBST(MENHIRINCLUDE)
+
+-AC_SUBST(SEQINCLUDE)
+-AC_SUBST(SEQLIB)
+-
+ AC_SUBST(enable_re)
+ AC_SUBST(REINCLUDE)
+ AC_SUBST(RELIB)
+--- a/why3/lib/why3/META.in
++++ b/why3/lib/why3/META.in
+@@ -3,4 +3,4 @@
+ archive(byte) = "why3.cma"
+ archive(native) = "why3.cmxa"
+ plugin(native) = "why3.cmxs"
+-requires = "menhirLib @SEQLIB@ @RELIB@ unix num dynlink @ZIPLIB@ @MLMPFR@ @INFERPKG@ @SEXPLIB@"
++requires = "menhirLib @RELIB@ unix num dynlink @ZIPLIB@ @MLMPFR@ @INFERPKG@ @SEXPLIB@"
+--- a/why3/Makefile.in
++++ b/why3/Makefile.in
+@@ -104,7 +104,7 @@
+ #PSVIEWER  = @PSVIEWER@
+ #PDFVIEWER = @PDFVIEWER@
+
+-EXTINCLUDES = @WHY3INCLUDE@ @SEQINCLUDE@ @REINCLUDE@ @ZIPINCLUDE@ @MENHIRINCLUDE@ @NUMINCLUDE@ @INFERINCLUDE@ @YOJSONINCLUDES@
++EXTINCLUDES = @WHY3INCLUDE@ @REINCLUDE@ @ZIPINCLUDE@ @MENHIRINCLUDE@ @NUMINCLUDE@ @INFERINCLUDE@ @YOJSONINCLUDES@
+
+ # warnings are enabled and non fatal by default, except:
+ # - disabled:
+@@ -160,8 +160,8 @@
+ EXTLIBS = menhirLib
+ endif
+
+-EXTLIBS += @SEQLIB@ @RELIB@ unix nums dynlink result easy_format biniou yojson @ZIPLIB@ @WHY3LIB@ @INFERLIB@
+-EXTPKGS = menhirLib @SEQLIB@ @RELIB@ unix num dynlink yojson @ZIPLIB@ @MLMPFR@ @WHY3LIB@ @INFERPKG@ @SEXPLIB@ @SEXPLIBPPX@
++EXTLIBS += @RELIB@ unix nums dynlink result easy_format biniou yojson @ZIPLIB@ @WHY3LIB@ @INFERLIB@
++EXTPKGS = menhirLib @RELIB@ unix num dynlink yojson @ZIPLIB@ @MLMPFR@ @WHY3LIB@ @INFERPKG@ @SEXPLIB@ @SEXPLIBPPX@
+
+ EXTCMA	= $(addsuffix .cmo,$(EXTOBJS)) $(addsuffix .cma,$(EXTLIBS))
+ EXTCMXA = $(addsuffix .cmx,$(EXTOBJS)) $(addsuffix .cmxa,$(EXTLIBS))

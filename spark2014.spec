@@ -62,7 +62,21 @@ Patch3:         %{name}-colibri-not-available-for-testing.patch
 # See also: https://ocamlpro.github.io/alt-ergo/About/changes.html#version-2-4-0-january-22-2021
 Patch4:         %{name}-fix-gnatprove-alt-ergo-version-inquiry.patch
 
+# [Backports] Patches to ensure Why3 is compatibile with OCaml 5.
+# See also: https://gitlab.inria.fr/why3/why3/-/merge_requests/697
+Patch11:          %{name}-pr697-1-simple-replacement-for-stream.patch
+Patch12:          %{name}-pr697-2-remove-unsupported-funcitons.patch
+Patch13:          %{name}-pr697-3-use-semantic-tags.patch
+Patch14:          %{name}-pr697-4-replace-pervasives-by-stdlib.patch
+Patch15:          %{name}-pr697-5-bump-minimal-version-of-ocaml.patch
+Patch16:          %{name}-pr697-6-remove-dynlib-wrapper.patch
+Patch17:          %{name}-pr697-7-disable-custom-logic-for-seq.patch
+# Additional OCaml 5 compatibility patch for the Why3 GNAT-additions.
+Patch18:          %{name}-why3-gnat-replace-pervasives-by-stdlib.patch
+
 BuildRequires:  gcc-gnat gprbuild make sed
+# Autoconfig is needed as the *.in files are patched by the PR 697 patches.
+BuildRequires:  autoconf
 # For verifying the signature of the GCC tarball.
 BuildRequires:  gnupg2
 # A fedora-gnat-project-common that contains GPRbuild_flags is needed.
@@ -170,6 +184,15 @@ ln --symbolic ../gcc-%{gcc_version}/gcc/ada gnat2why/gnat_src
 %patch 2 -p1
 %patch 3 -p1
 %patch 4 -p1
+
+%patch 11 -p1
+%patch 12 -p1
+%patch 13 -p1
+%patch 14 -p1
+# Skip patch 15: patch has no effect on build.
+%patch 16 -p1
+%patch 17 -p1
+%patch 18 -p1
 
 # Patch gnatprove's hard-coded assumptions on (relative) paths.
 # -- Note: Depends on the application of patch 0.
