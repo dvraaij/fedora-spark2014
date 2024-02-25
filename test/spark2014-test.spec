@@ -1,8 +1,8 @@
 # Upstream source information.
 %global upstream_owner        AdaCore
 %global upstream_name         spark2014
-%global upstream_commit_date  20230107
-%global upstream_commit       12db22e854defa9d1c993ef904af1e72330a68ca
+%global upstream_commit_date  20240111
+%global upstream_commit       ce5fad038790d5dc18f9b5345dc604f1ccf45b06
 %global upstream_shortcommit  %(c=%{upstream_commit}; echo ${c:0:7})
 
 Name:           spark2014-test
@@ -67,11 +67,9 @@ export PYTHONPATH=%{python3}
 
 # Use a file-based cache for sharing proof results between tests.
 %global cachedir '%{_builddir}/%{upstream_name}-%{upstream_commit}/testsuite/result_cache'
-mkdir --parents %{cachedir}
 
-sed --in-place \
-    --expression='/--memcached-server/ { s,localhost:11211,file:%{cachedir},; t; q1; }' \
-    ./testsuite/gnatprove/lib/python/test_support.py
+mkdir --parents %{cachedir}
+export GNATPROVE_CACHE='file:%{cachedir}'
 
 # Run the tests.
 %python3 testsuite/gnatprove/run-tests \
@@ -94,5 +92,8 @@ sed --in-place \
 ###############
 
 %changelog
+* Sun Feb 25 2024 Dennis van Raaij <dvraaij@fedoraproject.org> - 0^20240111gitce5fad0-1
+- Updated to snapshot: Git commit ce5fad0 (fsf), 2024-01-11.
+
 * Sat Aug 05 2023 Dennis van Raaij <dvraaij@fedoraproject.org> - 0^20230107git12db22e-1
 - New package, snapshot: Git commit 12db22e (fsf-13), 2023-01-07.

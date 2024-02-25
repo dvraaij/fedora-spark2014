@@ -6,8 +6,8 @@ set -xe
 spectool -g spark2014-test.spec
 
 # Build the SRPM.
-fedpkg --release f39 --name spark2014-test srpm
+fedpkg --release f40 --name spark2014-test srpm
 
 # Upload the SRPM and run the tests.
-copr-cli build -r fedora-39-x86_64 "dvraaij/ada" \
-         spark2014-test-0^20230107git12db22e-1.fc39.src.rpm
+copr-cli build -r fedora-40-x86_64 "dvraaij/ada" \
+         spark2014-test-0^20240111gitce5fad0-1.fc40.src.rpm

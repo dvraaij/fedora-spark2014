@@ -1,14 +1,14 @@
 --- a/src/gnatprove/configuration.ads
 +++ b/src/gnatprove/configuration.ads
-@@ -36,6 +36,7 @@
- with GNATCOLL.VFS;      use GNATCOLL.VFS;
+@@ -39,6 +39,7 @@
  with Named_Semaphores;  use Named_Semaphores;
  with String_Utils;      use String_Utils;
+ with VC_Kinds;          use VC_Kinds;
 +with SPARK_Install;
  
  package Configuration is
  
-@@ -249,61 +250,6 @@
+@@ -223,64 +224,6 @@
     Max_Non_Blank_Lines : constant := 6;
     --  Maximum number of consecutive non blank lines on standard output
  
@@ -25,6 +25,7 @@
 -      --  prefix/share
 -      --  prefix/share/why3             - files that come with Why3
 -      --  prefix/share/spark/config     - various config files
+-      --  prefix/share/spark/error_codes - documentation of errors/warnings
 -      --  prefix/share/spark/stdlib     - Why3 files of the stdlib
 -      --  prefix/share/spark/theories   - Why3 files for Ada theories
 -
@@ -44,6 +45,8 @@
 -        Compose (Share_Spark, "theories");
 -      Share_Spark_Config       : constant String :=
 -        Compose (Share_Spark, "config");
+-      Share_Spark_Explain_Codes : constant String :=
+-        Compose (Share_Spark, "explain_codes");
 -      Share_Spark_Runtimes     : constant String :=
 -        Compose (Share_Spark, "runtimes");
 -      Help_Msg_File            : constant String :=
@@ -72,15 +75,15 @@
  
 --- a/src/gnatprove/gnatprove.adb
 +++ b/src/gnatprove/gnatprove.adb
-@@ -82,6 +82,7 @@
- with GNATCOLL.Utils;             use GNATCOLL.Utils;
- with Named_Semaphores;           use Named_Semaphores;
- with String_Utils;               use String_Utils;
+@@ -86,6 +86,7 @@
+ with GPR2.Project.View;
+ with Named_Semaphores; use Named_Semaphores;
+ with String_Utils;     use String_Utils;
 +with SPARK_Install;
  
  procedure Gnatprove with SPARK_Mode is
  
-@@ -737,10 +738,9 @@
+@@ -847,10 +848,9 @@
        Path_Val : constant String := Value ("PATH", "");
        Gpr_Val  : constant String := Value ("GPR_PROJECT_PATH", "");
        Gpr_Tool : constant String := Value ("GPR_TOOL", "");

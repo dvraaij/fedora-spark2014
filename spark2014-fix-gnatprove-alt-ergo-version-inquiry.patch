@@ -1,6 +1,6 @@
 --- a/src/gnatprove/configuration.adb
 +++ b/src/gnatprove/configuration.adb
-@@ -1225,7 +1225,7 @@
+@@ -1267,7 +1267,7 @@
        if Alt_Ergo /= null then
           Ada.Text_IO.Put (Alt_Ergo.all & ": ");
           Call_With_Status (Alt_Ergo.all,

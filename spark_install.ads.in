@@ -4,35 +4,36 @@ with Call;
 package SPARK_Install is
    use GNAT.Strings;
 
-   Prefix               : constant String := "@PREFIX@";      
-   
-   Lib                  : constant String := "@LIBDIR@";
-   Lib_GNAT             : constant String := "@GNATPRJDIR@"; -- from gnatprove.adb
+   Prefix                    : constant String := "@PREFIX@";
 
-   Libexec              : constant String := "@LIBEXECDIR@";
-   Libexec_Spark        : constant String := "@LIBEXECDIR@/@NAME@";
-   Libexec_Spark_Bin    : constant String := "@LIBEXECDIR@/@NAME@/bin";
-   Libexec_Share_Why3   : constant String := "@LIBEXECDIR@/@NAME@/share/why3";
-   
-   Share                : constant String := "@DATADIR@";
-   Share_GPR            : constant String := "@DATADIR@/gpr"; -- from gnatprove.adb
-   Share_Spark          : constant String := "@DATADIR@/@NAME@";
-   Share_Spark_Theories : constant String := "@DATADIR@/@NAME@/theories";
-   Share_Spark_Config   : constant String := "@DATADIR@/@NAME@/config";
-   Share_Spark_Runtimes : constant String := "@DATADIR@/@NAME@/runtimes";      
-   Help_Msg_File        : constant String := "@DATADIR@/@NAME@/help.txt";
-   Gpr_Frames_DB        : constant String := "@DATADIR@/@NAME@/config/frames";
-   Gpr_Translation_DB   : constant String := "@DATADIR@/@NAME@/config/gnat2why";
-   Gnatprove_Conf       : constant String := "@DATADIR@/@NAME@/config/gnatprove.conf";
+   Lib                       : constant String := "@LIBDIR@";
+   Lib_GNAT                  : constant String := "@GNATPRJDIR@"; -- from gnatprove.adb
 
-   GNSA_Dir             : constant String := "@LIBEXECDIR@/@NAME@";
-   GNSA_Dir_Bin         : constant String := "@LIBEXECDIR@/@NAME@/bin";
+   Libexec                   : constant String := "@LIBEXECDIR@";
+   Libexec_Spark             : constant String := "@LIBEXECDIR@/@NAME@";
+   Libexec_Spark_Bin         : constant String := "@LIBEXECDIR@/@NAME@/bin";
+   Libexec_Share_Why3        : constant String := "@LIBEXECDIR@/@NAME@/share/why3";
 
-   Z3_Present           : Boolean;
-   CVC5_Present         : Boolean;
-   Colibri_Present      : Boolean;
+   Share                     : constant String := "@DATADIR@";
+   Share_GPR                 : constant String := "@DATADIR@/gpr"; -- from gnatprove.adb
+   Share_Spark               : constant String := "@DATADIR@/@NAME@";
+   Share_Spark_Theories      : constant String := "@DATADIR@/@NAME@/theories";
+   Share_Spark_Config        : constant String := "@DATADIR@/@NAME@/config";
+   Share_Spark_Explain_Codes : constant String := "@DATADIR@/@NAME@/explain_codes";
+   Share_Spark_Runtimes      : constant String := "@DATADIR@/@NAME@/runtimes";
+   Help_Msg_File             : constant String := "@DATADIR@/@NAME@/help.txt";
+   Gpr_Frames_DB             : constant String := "@DATADIR@/@NAME@/config/frames";
+   Gpr_Translation_DB        : constant String := "@DATADIR@/@NAME@/config/gnat2why";
+   Gnatprove_Conf            : constant String := "@DATADIR@/@NAME@/config/gnatprove.conf";
 
-   Help_Message         : constant String :=
+   GNSA_Dir                  : constant String := "@LIBEXECDIR@/@NAME@";
+   GNSA_Dir_Bin              : constant String := "@LIBEXECDIR@/@NAME@/bin";
+
+   Z3_Present                : Boolean;
+   CVC5_Present              : Boolean;
+   Colibri_Present           : Boolean;
+
+   Help_Message              : constant String :=
      Call.Read_File_Into_String (Help_Msg_File);
 
 end SPARK_Install;
